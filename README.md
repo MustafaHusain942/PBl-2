@@ -70,14 +70,41 @@ http://127.0.0.1:5000
 ---
 
 🧰 Technologies Used
-. Python 3
+- Python 3
+- TensorFlow / Keras – Deep learning model building
+- Flask – Lightweight web framework
+- OpenCV & PIL – Image preprocessing
+- Jupyter Notebook – Model training & evaluation
+- HTML / CSS / JS – Frontend styling
 
-. TensorFlow / Keras – Deep learning model building
+---
 
-. Flask – Lightweight web framework
+🚀 How to Use
+- Run the app and navigate to the browser URL
+- Upload a valid MRI image of a brain scan
+- The model will classify the image as one of the tumor categories
+- View the classification result and take action accordingly
 
-. OpenCV & PIL – Image preprocessing
+---
 
-. Jupyter Notebook – Model training & evaluation
+🤝 Contributing
+We welcome contributions to improve NeuroInsight!
+To contribute:
 
-. HTML / CSS / JS – Frontend styling
+Fork the repo
+
+Create a new feature branch
+
+```bash
+git checkout -b your-feature-name
+```
+Commit your changes
+
+```bash
+git commit -m "Describe your changes"
+```
+Push and submit a pull request
+
+```bash
+git push origin your-feature-name
+```
