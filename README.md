@@ -66,3 +66,18 @@ Then open your browser and go to:
 ```bash
 http://127.0.0.1:5000
 ```
+
+---
+
+🧰 Technologies Used
+. Python 3
+
+. TensorFlow / Keras – Deep learning model building
+
+. Flask – Lightweight web framework
+
+. OpenCV & PIL – Image preprocessing
+
+. Jupyter Notebook – Model training & evaluation
+
+. HTML / CSS / JS – Frontend styling
