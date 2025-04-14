@@ -1,8 +1,8 @@
 # 🧠 NeuroInsight
 
-**NeuroInsight** is an intelligent web application built to assist healthcare professionals, radiologists, and researchers in detecting brain tumors from MRI images using deep learning. With support for multiple pre-trained CNN models like **DenseNet**, **MobileNet**, and **VGG19**, the platform enables efficient classification of brain tumor types for better diagnosis support.
+**NeuroInsight** is an intelligent web application built to assist healthcare professionals, radiologists, and researchers in detecting brain tumors from MRI images using deep learning. With support for multiple pre-trained CNN models, the platform enables efficient classification of brain tumor types for better diagnosis support.
 
-By uploading an MRI scan, the app processes the image through a chosen deep learning model to classify the condition, enhancing diagnostic speed and consistency. NeuroInsight is designed to bridge medical imaging and AI, aiming to support timely and data-driven healthcare decisions.
+When an MRI scan is uploaded, the app processes the image through a deep learning model to classify the condition, enhancing diagnostic speed and consistency. NeuroInsight is designed to bridge medical imaging and AI, aiming to support timely and data-driven healthcare decisions.
 
 ---
 
