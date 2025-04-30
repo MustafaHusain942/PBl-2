@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detection History</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}">
+    <style>
+        .detection-history {
+            margin-top: 40px;
+        }
+
+        .symptom-tag {
+            display: inline-block;
+            background-color: #0077B6;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin: 2px;
+            font-size: 0.85em;
+        }
+        
+        .tumor-type {
+            position: relative;
+            cursor: help;
+        }
+        
+        .tumor-info {
+            visibility: hidden;
+            width: 300px;
+            background-color: #f9f9f9;
+            color: #333;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1002;  /* Increased z-index to appear above header */
+            bottom: auto;   /* Changed from bottom positioning */
+            top: 0;        /* Position from top */
+            left: 100%;    /* Position to the right of the cell */
+            transform: translateX(10px);  /* Small offset from the cell */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            opacity: 0;
+            transition: opacity 0.3s;
+            border: 1px solid #ddd;
+            pointer-events: none;  /* Prevent popup from interfering with table interaction */
+        }
+
+        .tumor-type:hover .tumor-info {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Add responsive positioning for smaller screens */
+        @media screen and (max-width: 1200px) {
+            .tumor-info {
+                left: auto;
+                right: 0;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Add header -->
+    <header style="background-color: rgba(0, 119, 182, 0.9); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; height: 150px; position: fixed; width: 100%; top: 0; z-index: 1000;">
+        <div style="display: flex; align-items: center; gap: 25px;">
+            <img src="/static/neuroinsight_logo.png" alt="NeuroInsight Logo" style="height: 120px; width: auto; object-fit: contain;">
+            <h1 style="margin: 0; font-size: 36px;">NeuroInsight</h1>
+        </div>
+        <div>
+            <button onclick="location.href='/'" style="margin-right: 15px; padding: 12px 24px; background-color: white; color: #0077B6; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px;">Home</button>
+            <button onclick="openSidebar()" style="padding: 12px 24px; background-color: white; color: #0077B6; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px;">About Us</button>
+        </div>
+    </header>
+
+    <!-- History Icon Button with adjusted position -->
+    <div class="history-button" style="position: fixed; top: 170px; right: 20px; z-index: 999;">
+        <a href="/history" class="history-link">
+            <svg class="history-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            History
+        </a>
+    </div>
+
+    <!-- Add sidebar -->
+    <div id="sidebar" style="position: fixed; top: 0; right: -400px; width: 400px; height: 100%; background-color: #0077B6; color: white; padding: 30px; box-shadow: -2px 0 5px rgba(0,0,0,0.5); transition: right 0.3s; overflow-y: auto; z-index: 1001;">
+        <h2 style="font-size: 24px; margin-bottom: 20px;">🧠 About NeuroInsight</h2>
+        <p style="margin-bottom: 20px; line-height: 1.6;">NeuroInsight is a deep learning-based web application designed to assist in the early detection of brain tumors through MRI scans. This project leverages the power of Convolutional Neural Networks (CNNs) to classify brain scans into four categories: Glioma Tumor, Meningioma Tumor, Pituitary Tumor, and No Tumor.</p>
+        
+        <p style="margin-bottom: 20px; line-height: 1.6;">Built as a 3rd-year Computer Science engineering project, our goal is to bridge the gap between medical diagnostics and artificial intelligence. NeuroInsight is not a replacement for medical professionals but a supportive tool that helps in making faster, more accurate preliminary assessments.</p>
+        
+        <h3 style="font-size: 20px; margin: 20px 0;">💡 Key Features:</h3>
+        <ul style="list-style-type: none; padding-left: 0; margin-bottom: 20px; line-height: 1.6;">
+            <li style="margin-bottom: 10px;">• Easy-to-use interface for uploading MRI scans</li>
+            <li style="margin-bottom: 10px;">• Instant tumor classification results</li>
+            <li style="margin-bottom: 10px;">• Interactive history section for reviewing previous cases</li>
+            <li style="margin-bottom: 10px;">• Clickable tumor types showing detailed medical information</li>
+            <li style="margin-bottom: 10px;">• Sleek and modern frontend using HTML, CSS, and JavaScript</li>
+            <li style="margin-bottom: 10px;">• Backend built with Flask and deep learning models</li>
+        </ul>
+        
+        <h3 style="font-size: 20px; margin: 20px 0;">🎯 Our Vision:</h3>
+        <p style="margin-bottom: 30px; line-height: 1.6;">To empower medical diagnostics with AI precision, supporting faster decision-making and potentially saving lives through early detection.</p>
+        
+        <button onclick="closeSidebar()" style="padding: 8px 15px; background-color: white; color: #0077B6; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Close</button>
+    </div>
+
+    <!-- Add margin-top to account for fixed header -->
+    <div style="margin-top: 170px;">
+        <div id="bg-video-container">
+            <video id="bg-video" autoplay muted loop>
+                <source src="{{ url_for('static', filename='vecteezy_conceptual-3d-animation-of-digital-brain-hologram-with-ai_11591321.mp4') }}" type="video/mp4">
+            </video>
+        </div>
+        
+        <div class="container">
+            <div class="detection-history">
+                <h1 style="color: #0077B6; margin-bottom: 30px;">Detection History</h1>
+                <button class="action-button clear-btn" onclick="clearHistory()">Clear History</button>
+                
+                <table style="margin-top: 30px;">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Patient ID</th>
+                            <th>Appointment ID</th>
+                            <th>Patient Name</th>
+                            <th>Age</th>
+                            <th>Prediction</th>
+                            <th>Confidence</th>
+                            <th>Report</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in history %}
+                        <tr>
+                            <td>{{ entry.date }}</td>
+                            <td>{{ entry.patient_id }}</td>
+                            <td>{{ entry.appointment_id }}</td>
+                            <td>{{ entry.patient_name }}</td>
+                            <td>{{ entry.patient_age }}</td>
+                            <td class="tumor-type">
+                                {{ entry.prediction }}
+                                {% if 'Glioma' in entry.prediction %}
+                                <div class="tumor-info">
+                                    <h4>Glioma Tumor</h4>
+                                    <p><strong>Origin:</strong> Develops from glial cells, which support and protect neurons in the brain and spinal cord.</p>
+                                    <p><strong>Nature:</strong> Can be benign or malignant; glioblastoma is a highly aggressive subtype.</p>
+                                    <p><strong>Location:</strong> Commonly found in the cerebrum, but may occur in the brainstem or spinal cord.</p>
+                                    <p><strong>Symptoms:</strong> Headaches, seizures, memory loss, personality changes, and neurological deficits.</p>
+                                    <p><strong>Treatment Options:</strong> Surgery, radiation therapy, chemotherapy, and targeted therapy.</p>
+                                    <p><strong>Prognosis:</strong> Depends on the grade; higher-grade gliomas have lower survival rates and often recur.</p>
+                                </div>
+                                {% elif 'Meningioma' in entry.prediction %}
+                                <div class="tumor-info">
+                                    <h4>Meningioma Tumor</h4>
+                                    <p><strong>Origin:</strong> Arises from the meninges, the protective membranes covering the brain and spinal cord.</p>
+                                    <p><strong>Nature:</strong> Usually benign and slow-growing, but can rarely be atypical or malignant.</p>
+                                    <p><strong>Location:</strong> Typically found near the surface of the brain, often attached to the dura mater.</p>
+                                    <p><strong>Symptoms:</strong> Vision issues, headaches, hearing loss, balance problems, or no symptoms at all.</p>
+                                    <p><strong>Treatment Options:</strong> Surgical removal is common; radiation therapy used in inoperable cases.</p>
+                                    <p><strong>Prognosis:</strong> Generally good, especially for low-grade meningiomas with complete resection.</p>
+                                </div>
+                                {% elif 'Pituitary' in entry.prediction %}
+                                <div class="tumor-info">
+                                    <h4>Pituitary Tumor</h4>
+                                    <p><strong>Origin:</strong> Grows in the pituitary gland, a small endocrine gland at the brain's base.</p>
+                                    <p><strong>Nature:</strong> Mostly benign adenomas, but can disrupt hormone production significantly.</p>
+                                    <p><strong>Location:</strong> Found in the sella turcica, beneath the brain and behind the eyes.</p>
+                                    <p><strong>Symptoms:</strong> Hormonal imbalances, vision changes, headaches, fatigue, weight gain or loss.</p>
+                                    <p><strong>Treatment Options:</strong> Medication, hormone therapy, surgery, or radiation depending on the tumor type.</p>
+                                    <p><strong>Prognosis:</strong> Often excellent with early diagnosis and treatment, especially for non-invasive tumors.</p>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>{{ "%.2f"|format(entry.confidence) }}%</td>
+                            <td>
+                                <a href="{{ url_for('download_report', index=loop.index0) }}" class="download-btn">Download Report</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all history? This action cannot be undone.')) {
+                fetch('/clear_history', {
+                    method: 'POST',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert('Error clearing history');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error clearing history');
+                });
+            }
+        }
+
+        function openSidebar() {
+            document.getElementById('sidebar').style.right = '0';
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').style.right = '-400px';
+        }
+    </script>
+</body>
+</html>
